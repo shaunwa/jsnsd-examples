@@ -1,8 +1,8 @@
 const http = require('http');
 
 const server = http.createServer((req, res) => {
-    console.log('I received a request!');
-    res.end('Hello from the Node.js server!');
+    const dateAndTime = new Date().toISOString();
+    res.end(`The current date and time is: ${dateAndTime}`);
 });
 
 server.listen(3000, () => {
