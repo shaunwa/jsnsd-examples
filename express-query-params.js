@@ -36,15 +36,24 @@ const products = [
 ];
 
 app.get('/products', (req, res) => {
-    const { sortField = 'id', sortOrder = 'asc' } = req.query;
+    const {
+        sortField = 'id',
+        sortOrder = 'asc',
+        pricelt: priceLt = '',
+        pricegt: priceGt = '0',
+    } = req.query;
+
+    const minimumPrice = Number(priceGt);
+
+    const filteredProducts = products.filter(product => product.price >= minimumPrice && (!priceLt || product.price <= Number(priceLt)))
 
     let sortedProducts;
     if (typeof products[0][sortField] === 'string') {
-        sortedProducts = products.slice().sort((a, b) => sortOrder === 'asc'
+        sortedProducts = filteredProducts.slice().sort((a, b) => sortOrder === 'asc'
             ? a[sortField].localeCompare(b[sortField])
             : b[sortField].localeCompare(a[sortField]));
     } else {
-        sortedProducts = products.slice().sort((a, b) => sortOrder === 'asc'
+        sortedProducts = filteredProducts.slice().sort((a, b) => sortOrder === 'asc'
             ? a[sortField] - b[sortField]
             : b[sortField] - a[sortField]);
     }
