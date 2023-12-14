@@ -16,6 +16,14 @@ const server = http.createServer((req, res) => {
                 console.log(parsedBody);
             } else if (contentType === 'text/plain') {
                 console.log(body);
+            } else if (contentType === 'application/person') {
+                const splitBody = body.split('\n');
+                const parsedBody = {
+                    name: splitBody[0],
+                    age: Number(splitBody[1]),
+                    hairColor: splitBody[2],
+                };
+                console.log(parsedBody);
             } else {
                 console.log('Unrecognized content type!');
                 console.log(body);
