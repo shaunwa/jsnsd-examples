@@ -1,8 +1,3 @@
-const express = require('express');
-const app = express();
-
-app.use(express.json());
-
 let nextId = 125;
 
 let products = [{
@@ -41,8 +36,7 @@ let products = [{
     inStock: false
 }];
 
-// Listing & Searching (all instances)
-app.get('/products', (req, res) => {
+module.exports.listProducts = (req, res) => {
     if (Object.keys(req.query).length === 0) {
         return res.json(products);
     }
@@ -63,10 +57,9 @@ app.get('/products', (req, res) => {
     );
 
     res.json(filteredProducts);
-});
+}
 
-// Reading (single instance)
-app.get('/products/:productId', (req, res) => {
+module.exports.getProductById = (req, res) => {
     const { productId } = req.params;
     const product = products.find(p => p.id === Number(productId));
     if (product) {
@@ -74,10 +67,9 @@ app.get('/products/:productId', (req, res) => {
     } else {
         res.status(404).json({ message: 'There is no product with the id ' + productId });
     }
-});
+}
 
-// Creating
-app.post('/products', (req, res) => {
+module.exports.createProduct = (req, res) => {
     const { id, name, price, category, inStock } = req.body;
 
     if (name && price && category) {
@@ -90,17 +82,17 @@ app.post('/products', (req, res) => {
     } else {
         res.sendStatus(400);
     }
-});
+}
 
-app.delete('/products/:productId', (req, res) => {
+module.exports.deleteProduct = (req, res) => {
     const { productId } = req.params;
 
     products = products.filter(product => product.id !== Number(productId));
 
     res.sendStatus(204);
-});
+}
 
-app.patch('/products/:productId', (req, res) => {
+module.exports.patchProduct = (req, res) => {
     const { productId } = req.params;
     const updateableProperties = ['name', 'price', 'category', 'inStock'];
 
@@ -113,9 +105,9 @@ app.patch('/products/:productId', (req, res) => {
     }
 
     res.json(product);
-});
+}
 
-app.put('/products/:productId', (req, res) => {
+module.exports.replaceProduct = (req, res) => {
     const { productId } = req.params; 
 
     let updatedProduct;
@@ -130,8 +122,4 @@ app.put('/products/:productId', (req, res) => {
     });
 
     res.json(updatedProduct);
-});
-
-app.listen(3000, () => {
-    console.log(`Server is listening on port 3000`);
-});
+}
