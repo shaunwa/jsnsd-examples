@@ -102,24 +102,14 @@ app.delete('/products/:productId', (req, res) => {
 
 app.put('/products/:productId', (req, res) => {
     const { productId } = req.params;
-    const { name, price, category, inStock } = req.body;
+    const updateableProperties = ['name', 'price', 'category', 'inStock'];
 
     const product = products.find(product => product.id === Number(productId));
     
-    if (name) {
-        product.name = name;
-    }
-
-    if (price !== undefined) {
-        product.price = price;
-    }
-
-    if (category) {
-        product.category = category;
-    }
-
-    if (inStock !== undefined) {
-        product.inStock = inStock;
+    for (const up of updateableProperties) {
+        if (req.body[up] !== undefined) {
+            product[up] = req.body[up];
+        }
     }
 
     res.json(product);
