@@ -20,11 +20,18 @@ const users = [
 app.get('/user-profile/:userId', (req, res) => {
     const { userId } = req.params;
     const user = users.find(u => u.id === Number(userId));
-    res.render('user-profile', { ...user, userHasInterests: user.interests.length > 0 });
+    res.render('user-profile', {
+        ...user,
+        userHasInterests: user.interests.length > 0,
+        username: 'shaunwa',
+    });
 })
 
 app.get('/users', (req, res) => {
-    res.render('users-list', { users, buttonText: 'Send Friend Request!' });
+    res.render('users-list', {
+        users,
+        buttonText: 'Send Friend Request!',
+    });
 })
 
 // Starting the server
