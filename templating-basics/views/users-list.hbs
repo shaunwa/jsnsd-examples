@@ -1,0 +1,8 @@
+<div>
+    {{> navbar}}
+    {{#each users}}
+    <h3>{{this.name}}</h3>
+    <p>{{this.email}}</p>
+    <button>{{../buttonText}}</button>
+    {{/each}}
+</div>

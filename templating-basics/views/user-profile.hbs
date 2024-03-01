@@ -1,5 +1,8 @@
 <div>
-    <h1>{{name}}</h1>
-    <h3>{{email}}</h3>
-    <p>Interests: {{interests}}</p>
+    {{> navbar}}
+    {{#if userHasInterests}}
+        <p>Interests: {{interests}}</p>
+    {{else}}
+        <p>User hasn't specified any interests yet</p>
+    {{/if}}
 </div>
