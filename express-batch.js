@@ -11,10 +11,10 @@ const {
 } = require('./express-batch-handlers');
 
 const routes = [
-    { method: 'get', path: '/products', handler: listProducts },
-    { method: 'post', path: '/products', handler: createProduct },
-    { method: 'delete', path: '/products/:productId', handler: deleteProduct },
-    { method: 'patch', path: '/products/:productId', handler: patchProduct }
+    { method: 'get', path: '/products', description: 'Load all products', handler: listProducts },
+    { method: 'post', path: '/products', description: 'Create a product', handler: createProduct },
+    { method: 'delete', path: '/products/:productId', description: 'Delete a product by id', handler: deleteProduct },
+    { method: 'patch', path: '/products/:productId', description: 'Update a few fields on a product', handler: patchProduct }
 ];
 
 routes.forEach(route => {
@@ -42,6 +42,13 @@ app.post('/batch', (req, res) => {
     });
 
     res.json(results);
+});
+
+app.get('/metadata', (req, res) => {
+    const routeDescription = routes.map(route => `${route.method} ${route.path} - ${route.description}`)
+        .join('\n');
+
+    res.send(routeDescription);
 });
 
 app.listen(3000, () => {
