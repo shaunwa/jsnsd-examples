@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>{{name}}</h1>
+        <p class="bio">{{bio}}</p>
+        <div class="contact-info">
+            <h2>Contact Information</h2>
+            <ul>
+                <li>Email: {{email}}</li>
+                {{#if website}}
+                <li>Website: <a href="{{website}}">{{website}}</a></li>
+                {{/if}}
+                {{#if github}}
+                <li>GitHub: <a href="https://github.com/{{github}}">{{github}}</a></li>
+                {{/if}}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+    head
+        title Pug
+    body
+        div Here is a greeting:
+            h1= name
+            if unreadMessagesCount > 0
+                p You have #{unreadMessagesCount} unread messages
+        h3 Friends
+        each friend in users
+            p= friend.name
+            p Email: #{friend.email}
+            ul
+                each interest in friend.interests.split(',')
+                    li= interest
