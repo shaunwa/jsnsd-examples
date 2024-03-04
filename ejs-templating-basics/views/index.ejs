@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        <% if (firstTimeVisitor) { %>
+            <h1>Welcome <%= name %>! This is your first time on this site!</h1>
+        <% } else { %>
+            <h1>Welcome back!</h1>
+        <% } %>
+
+        <% if (nameFilter) { %>
+            <% for (const user of users.filter(u => u.name.toLowerCase().includes(nameFilter.toLowerCase()))) { %>
+                <h3>Name: <%= user.name %></h3>
+                <p>Email: <%= user.email %></p>
+            <% } %>
+        <% } else { %>
+            <% for (const user of users) { %>
+                <h3>Name: <%= user.name %></h3>
+                <p>Email: <%= user.email %></p>
+            <% } %>
+        <% } %>
+    </body>
+</html>
