@@ -1,10 +1,8 @@
 const express = require('express');
 const app = express();
-const { getProductById } = require('./product-util');
+const { getProductById, createProduct } = require('./product-util');
 
 app.use(express.json());
-
-let nextId = 125;
 
 let products = [{
     id: 1,
@@ -79,14 +77,11 @@ app.get('/products/:productId', (req, res) => {
 
 // Creating
 app.post('/products', (req, res) => {
-    const { id, name, price, category, inStock } = req.body;
+    const { name, price, category, inStock = false } = req.body;
 
     if (name && price && category) {
-        let newId = nextId;
-        let newProduct = { id: newId, name, price, category, inStock: !!inStock };
-        products.push(newProduct);
-        nextId += 1;
-        res.set('Location', '/products/' + newId);
+        const newProduct = createProduct(products, { name, price, category, inStock })
+        res.set('Location', '/products/' + newProduct.id);
         res.sendStatus(201);
     } else {
         res.sendStatus(400);
