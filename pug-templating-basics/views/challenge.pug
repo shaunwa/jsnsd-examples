@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        title User Profile
+    body
+        div
+            h1= name
+            p(class="bio")= bio
+            div
+                h2 Contact Information
+                ul
+                    li Email: #{email}
+                    if website
+                        li Website: 
+                            a(href=website)= website
+                    if github
+                        li Github: 
+                            a(href="https://github.com/" + github)= github
