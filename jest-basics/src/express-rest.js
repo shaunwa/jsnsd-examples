@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const { getProductById, createProduct } = require('./product-util');
+const { getProductById } = require('./product-util');
+const createHandler = require('./create-handler');
 
 app.use(express.json());
 
@@ -76,17 +77,7 @@ app.get('/products/:productId', (req, res) => {
 });
 
 // Creating
-app.post('/products', (req, res) => {
-    const { name, price, category, inStock = false } = req.body;
-
-    if (name && price && category) {
-        const newProduct = createProduct(products, { name, price, category, inStock })
-        res.set('Location', '/products/' + newProduct.id);
-        res.sendStatus(201);
-    } else {
-        res.sendStatus(400);
-    }
-});
+app.post('/products', createHandler);
 
 app.delete('/products/:productId', (req, res) => {
     const { productId } = req.params;
