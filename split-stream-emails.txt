@@ -1,0 +1,4 @@
+alice.johnson@example.com
+bob.smith@example.com
+charlie.brown@example.com
+dana.scully@example.com
