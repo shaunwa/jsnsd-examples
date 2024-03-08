@@ -45,14 +45,29 @@ const filterStream = function(predicate) {
     });
 }
 
-const writeStream = fs.createWriteStream('./map-example.json')
+const reduceStream = function(accumulator, startingValue = 0) {
+    let acc = startingValue;
+    return new Transform({
+        objectMode: true,
+        transform(chunk, encoding, callback) {
+            acc = accumulator(acc, chunk);
+            callback();
+        },
+        flush() {
+            this.push(acc);
+        }
+    });
+}
+
+const writeStream = fs.createWriteStream('./reduce-example.json')
 
 lineByLine
     .pipe(mapStream(x => x.toString()))
-    .pipe(filterStream(x => x.startsWith('J')))
     .pipe(mapStream(x => {
         const [name, age, email] = x.split(' - ');
-        return { name, age, email };
+        return { name, age: Number(age), email };
     }))
-    .pipe(mapStream(JSON.stringify))
+    .pipe(mapStream(x => x.age))
+    .pipe(reduceStream((acc, x) => acc + x))
+    .pipe(mapStream(x => x.toString()))
     .pipe(writeStream);
