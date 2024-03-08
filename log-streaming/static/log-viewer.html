@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            window.addEventListener('load', () => {
+                const source = new EventSource('http://localhost:4000/logs');
+                source.onmessage = function(event) {
+                    const logContentsContainer = document.getElementById('log-contents');
+                    console.log(event.data);
+                    logContentsContainer.innerHTML += `${event.data}<br>`;
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+            });
+        </script>
+    </head>
+
+    <body>
+        <h2>Log Server Most Recent Logs</h2>
+        <div id="log-contents"></div>
+    </body>
+</html>
