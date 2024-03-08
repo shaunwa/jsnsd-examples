@@ -3,19 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Chat Room</title>
+    <script>
+        const source = new EventSource('http://localhost:4000/join');
+
+        source.onmessage = function(event) {
+            const msgContainer = document.getElementById('messages');
+            msgContainer.innerText += `${event.data}\n`;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function sendMessage() {
+            const msgInput = document.getElementById('message-input');
+            fetch('/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: msgInput.value }),
+            })
+            .then(response => {
+                msgInput.value = '';
+            })
+        }
+    </script>
 </head>
 <body>
     <h2>Simple Chat Room</h2>
     <input type="text" id="message-input" placeholder="Enter message...">
     <button onclick="sendMessage()">Send</button>
     <div id="messages"></div>
-
-    <script>
-        // Your code here
-
-        function sendMessage() {
-            // And here
-        }
-    </script>
 </body>
 </html>
