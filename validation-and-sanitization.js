@@ -7,29 +7,37 @@ app.use(express.json());
 const users = [];
 
 const createUserBodySpecification = {
-    name: 'string',
-    email: 'string',
-    password: 'string',
-    socialMediaLinks: ['string'],
+    name: { type: 'string' },
+    email: { type: 'string', required: false },
+    password: { type: 'string' },
+    socialMediaLinks: { type: ['string'] },
 }
 
-function validate(specification, data) {
+function getValidationErrors(specification, data) {
+    const defaults = { required: true };
+
+    const validationErrors = [];
+
     for (let key in specification) {
-        if (data[key] == null) {
-            return false;
+        const settings = { ...defaults, ...specification[key] };
+
+        if (settings.required && data[key] == null) {
+            validationErrors.push({ field: key, error: "Required", message: `The ${key} field is required, but was missing` });
         }
 
-        if (Array.isArray(specification[key])) {
-            const type = specification[key][0];
-            if (data[key].some(element => typeof(element) !== type)) {
-                return false;
+        if (Array.isArray(settings.type)) {
+            const type = settings.type[0];
+            if (!Array.isArray(data[key]) || data[key].some(element => typeof(element) !== type)) {
+                validationErrors.push({ field: key, error: "Wrong type", message: `The ${key} field must be an array of ${settings.type}s`});
             }
-        } else if (typeof(data[key]) !== specification[key]) {
-            return false;
+        } else if (typeof(data[key]) !== settings.type) {
+            if (settings.required || data[key] != null) {
+                validationErrors.push({ field: key, error: "Wrong type", message: `The ${key} field must be a ${settings.type}`});
+            }
         }
     }
 
-    return true;
+    return validationErrors;
 }
 
 const htmlTagRegex = /<[^>]+>/g;
@@ -54,10 +62,14 @@ function sanitize(specification, data) {
 }
 
 app.post('/users', (req, res) => {
-    const { name, email, password, socialMediaLinks } = req.body;
-
-    if (!validate(createUserBodySpecification, req.body)) {
-        return res.sendStatus(400);
+    const validationErrors = getValidationErrors(createUserBodySpecification, req.body);
+    if (validationErrors.length > 0) {
+        return res.status(400).json({
+            message: "Validation Error",
+            errors: {
+                body: validationErrors,
+            }
+        });
     }
 
     const sanitizedData = sanitize(createUserBodySanitization, req.body);
@@ -66,6 +78,27 @@ app.post('/users', (req, res) => {
 
     res.status(201).json(sanitizedData);
 });
+
+const userFiltersSpecification = {
+    search: { type: 'string' },
+    age: { type: 'number' },
+    hairColor: { type: 'string', required: false },
+}
+
+app.get('/users', (req, res) => {
+    const queryErrors = getValidationErrors(userFiltersSpecification, req.query);
+
+    if (queryErrors.length > 0) {
+        return res.status(400).json({
+            message: "Validation Error",
+            errors: {
+                query: queryErrors,
+            },
+        }); 
+    }
+
+    res.status(200).json([]);
+})
 
 app.listen(3000, () => {
     console.log('Server is listening on port 3000');
