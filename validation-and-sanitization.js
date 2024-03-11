@@ -60,7 +60,7 @@ app.post('/users', (req, res) => {
         return res.sendStatus(400);
     }
 
-    const sanitizedData = sanitize(sanitizeSpecification, req.body);
+    const sanitizedData = sanitize(createUserBodySanitization, req.body);
 
     users.push(sanitizedData);
 
