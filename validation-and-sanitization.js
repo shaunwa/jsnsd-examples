@@ -32,6 +32,27 @@ function validate(specification, data) {
     return true;
 }
 
+const htmlTagRegex = /<[^>]+>/g;
+
+const createUserBodySanitization = {
+    name: (originalName) => originalName.replace(htmlTagRegex, ''),
+    email: (originalEmail) => originalEmail.replace(htmlTagRegex, ''),
+    password: x => x,
+    socialMediaLinks: (links) => links.map(link => link.replace(htmlTagRegex, '')),
+}
+
+function sanitize(specification, data) {
+    const sanitizedData = {};
+
+    for (let key in data) {
+        if (specification[key] != null) {
+            sanitizedData[key] = specification[key](data[key]);
+        }
+    }
+
+    return sanitizedData;
+}
+
 app.post('/users', (req, res) => {
     const { name, email, password, socialMediaLinks } = req.body;
 
@@ -39,19 +60,11 @@ app.post('/users', (req, res) => {
         return res.sendStatus(400);
     }
 
-    // const sanitizedData = sanitize(sanitizeSpecification, req.body);
+    const sanitizedData = sanitize(sanitizeSpecification, req.body);
 
-    const htmlTagRegex = /<[^>]+>/g;
-    const newUser = {
-        name: name.replace(htmlTagRegex, ''),
-        email: email.replace(htmlTagRegex, ''),
-        password: password,
-        socialMediaLinks: socialMediaLinks.map(link => link.replace(htmlTagRegex, '')),
-    };
+    users.push(sanitizedData);
 
-    users.push(newUser);
-
-    res.status(201).json(newUser);
+    res.status(201).json(sanitizedData);
 });
 
 app.listen(3000, () => {
