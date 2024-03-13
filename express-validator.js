@@ -22,23 +22,28 @@ const validationMiddleware = (req, res, next) => {
     res.sendStatus(400);
 }
 
+const respondIfValidationErrors = (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+        const data = matchedData(req, { includeOptionals: true });
+        req.data = data;
+        return next();
+    }
+
+    res.status(400).json({ errors: errors.array() });
+}
+
 app.post('/blog-posts',
     body('title').trim().notEmpty().escape(),
     body('subtitle').trim().notEmpty().escape(),
     body('email').isEmail(),
     query('category').trim().isString().default('Uncategorized'),
+    respondIfValidationErrors,
     (req, res) => {
-    const errors = validationResult(req);
-    const data = matchedData(req, { includeOptionals: true });
-
-    if (errors.isEmpty()) {
-        console.log(data);
-        const newBlogPost = data;
-        blogPosts.push(newBlogPost);
-        return res.sendStatus(201);
-    }
-
-    res.status(400).json({ errors: errors.array() });
+    const newBlogPost = req.data;
+    blogPosts.push(newBlogPost);
+    return res.sendStatus(201);
 });
 
 app.listen(3000, () => {
