@@ -8,7 +8,7 @@ const users = [];
 
 const createUserBodySpecification = {
     name: { type: 'string' },
-    email: { type: 'string', required: false },
+    email: { type: 'string', required: false, customValidation: value => /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(value) },
     password: { type: 'string' },
     socialMediaLinks: { type: ['string'] },
 }
@@ -33,6 +33,12 @@ function getValidationErrors(specification, data) {
         } else if (typeof(data[key]) !== settings.type) {
             if (settings.required || data[key] != null) {
                 validationErrors.push({ field: key, error: "Wrong type", message: `The ${key} field must be a ${settings.type}`});
+            }
+        }
+
+        if (settings.customValidation && (settings.required || data[key] != null)) {
+            if (!settings.customValidation(data[key])) {
+                validationErrors.push({ field: key, error: "Custom Validation Failed" , message: "A custom validation failed for this value" });
             }
         }
     }
@@ -82,7 +88,7 @@ app.post('/users', (req, res) => {
 const userFiltersSpecification = {
     search: { type: 'string' },
     age: { type: 'number' },
-    hairColor: { type: 'string', required: false },
+    hairColor: { type: 'string' },
 }
 
 app.get('/users', (req, res) => {
