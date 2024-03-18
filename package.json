@@ -23,7 +23,9 @@
     "fastify-plugin": "^4.5.1",
     "handlebars": "^4.7.8",
     "mime-types": "^2.1.35",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "sharp": "^0.33.2",
+    "stream-json": "^1.8.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
