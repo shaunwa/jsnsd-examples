@@ -1,25 +1,24 @@
 const fastify = require('fastify');
+const fastifyPlugin = require('fastify-plugin');
 
 const app = fastify({ logger: true });
 
-const loggerPlugin = (instance, opts, done) => {
+const loggerPlugin = fastifyPlugin((instance, opts, done) => {
     instance.addHook('onRequest', (req, reply, done) => {
         instance.log.info(`Received a ${req.method} request on ${req.url}`);
         done();
     });
 
     done();
-}
+});
 
 app.register(loggerPlugin);
 
 app.get('/hello', (req, reply) => {
-    app.log.info('Received a GET request on /hello');
     return 'Hello!';
 });
 
 app.get('/hello2', (req, reply) => {
-    app.log.info('Received a GET request on /hello2');
     return 'Hello too!';
 });
 

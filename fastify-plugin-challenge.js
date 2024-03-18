@@ -1,4 +1,5 @@
 const fastify = require('fastify');
+const fastifyPlugin = require('fastify-plugin');
 
 const app = fastify({ logger: true });
 
@@ -15,16 +16,41 @@ const users = [
     { id: 10, username: 'user10', password: 'pass0123' }
 ];
 
-const challengePlugin = (instance, opts, done) => {
-    // Your code here
+const challengePlugin = fastifyPlugin((instance, opts, done) => {
+    instance.addHook('preHandler', (req, reply, done) => {
+        instance.log.info(`Body: ${JSON.stringify(req.body)}, URL Params: ${JSON.stringify(req.params)}`);
+
+        const { userId } = req.params;
+        const user = users.find(user => user.id === Number(userId));
+
+        if (!user) {
+            return reply.status(404).send('User not found');
+        }
+
+        req.user = user;
+
+        done();
+    });
+
+    instance.addHook('preSerialization', (req, reply, payload, done) => {
+        delete payload.password;
+        done(null, payload);
+    });
 
     done();
-}
+});
 
 app.register(challengePlugin);
 
 app.put('/user/:userId', (req, reply) => {
-    // Your logic here
+    const updates = req.body;
+    const user = req.user;
+
+    for (let key in updates) {
+        user[key] = updates[key];
+    }
+
+    return user;
 });
 
 app.listen({ port: 3000 }, () => {
