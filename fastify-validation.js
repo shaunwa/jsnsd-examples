@@ -1,5 +1,21 @@
 const fastify = require('fastify')({ logger: true });
 
+const { pizzaOrderSchema, pizzaOrderConfirmedSchema } = require('./fastify-validation-schemas');
+
+fastify.route({
+    method: 'POST',
+    url: '/orders',
+    schema: {
+        body: pizzaOrderSchema,
+        response: {
+            201: pizzaOrderConfirmedSchema,
+        }
+    },
+    handler: function(req, reply) {
+        reply.code(201).send({ totalCost: 40.10, estimatedWaitTime: 45 });
+    }
+})
+
 fastify.route({
     method: 'POST',
     url: '/events',
