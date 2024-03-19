@@ -19,6 +19,6 @@ app.get('/users/:userId', (req, res) => {
     const userId = Number(userIdRaw);
     const user = users.find(user => user.id === userId);
     res.json(user);
-})
+});
 
 app.listen(4000, () => console.log(`Server is running on http://localhost:4000`));

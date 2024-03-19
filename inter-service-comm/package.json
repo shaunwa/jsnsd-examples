@@ -4,12 +4,21 @@
   "description": "",
   "main": "service-1.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:service-1": "nodemon service-1-axios.js --watch service-1-axios.js",
+    "start:service-2": "nodemon service-2.js --watch service-2.js",
+    "start:service-3": "nodemon service-3.js --watch service-3.js",
+    "start:all": "concurrently \"npm run start:service-1\" \"npm run start:service-2\" \"npm run start:service-3\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.8"
+    "axios": "^1.6.8",
+    "node-fetch": "^3.3.2",
+    "undici": "^6.9.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
   }
 }
