@@ -1,7 +1,6 @@
 {
   "name": "jsnsd-example-code",
   "version": "1.0.0",
-  "description": "",
   "main": "core-node-server.js",
   "scripts": {
     "dev": "nodemon my-test-server.js --watch my-test-server.js"
@@ -29,5 +28,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
-  }
+  },
+  "description": ""
 }
