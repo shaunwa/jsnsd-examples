@@ -6,8 +6,14 @@ const app = express();
 app.get('/users/:userId', async (req, res) => {
     const { userId } = req.params;
 
-    const userRes = await axios.get(`http://localhost:4000/users/${userId}`);
-    const notesRes = await axios.get(`http://localhost:5000/users/${userId}/notes`);
+    const urls = [
+        `http://localhost:4000/users/${userId}`,
+        `http://localhost:5000/users/${userId}/notes`,
+    ];
+
+    const [userRes, notesRes] = await Promise.all(
+        urls.map(url => axios.get(url))
+    );
 
     const populatedUser = { ...userRes.data, notes: notesRes.data };
     res.json(populatedUser);
