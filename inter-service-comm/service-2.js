@@ -18,6 +18,11 @@ app.get('/users/:userId', (req, res) => {
     const { userId: userIdRaw } = req.params;
     const userId = Number(userIdRaw);
     const user = users.find(user => user.id === userId);
+
+    if (!user) {
+        return res.status(404).json({ message: 'Could not find user for id' });
+    }
+
     res.json(user);
 });
 
