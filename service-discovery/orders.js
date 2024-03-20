@@ -10,12 +10,12 @@ const app = express();
 app.use(express.json());
 
 app.post('/orders', async (req, res) => {
-    const { restaurantId, itemIds } = req.body;
+    const { restaurantId, itemIds, userAddress } = req.body;
     
     const restaurantRes = await axios.post(RESTAURANT_SERVICE + `/restaurants/${restaurantId}/orders`, { itemIds });
     const { estimatedTime: prepTime } = restaurantRes.data;
 
-    const deliveryRes = await axios.post(DELIVERY_SERVICE + `/restaurants/${restaurantId}/orders`);
+    const deliveryRes = await axios.post(DELIVERY_SERVICE + `/restaurants/${restaurantId}/orders`, { address: userAddress });
     const { estimatedTime: deliveryTime } = deliveryRes.data;
 
     res.json(`Thank you for your order! It will be delivered in ${prepTime + deliveryTime} minutes`);
