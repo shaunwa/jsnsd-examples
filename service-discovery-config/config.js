@@ -6,6 +6,7 @@ const { CONFIG_SERVICE } = process.env;
 const serviceUrl = new URL(CONFIG_SERVICE);
 
 const app = express();
+app.use(express.json());
 
 const serviceLocations = {
     orders: 'http://localhost:3001',
@@ -23,5 +24,14 @@ app.get('/config/:serviceName', (req, res) => {
         res.status(404).json({ message: 'Service not found' });
     }
 });
+
+app.put('/config/:serviceName', (req, res) => {
+    const { serviceName } = req.params;
+    const { newLocation } = req.body;
+
+    serviceLocations[serviceName] = newLocation;
+
+    res.json({ message: 'Updated!' });
+})
 
 app.listen(serviceUrl.port, () => console.log(`Server is running on ${serviceUrl.href}`));

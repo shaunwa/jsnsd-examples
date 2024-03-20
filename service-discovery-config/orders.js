@@ -2,6 +2,7 @@ const { URL } = require('url');
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
+const request = require('./request-with-retry');
 
 const app = express();
 app.use(express.json());
@@ -10,11 +11,8 @@ const setupApp = (services) => {
     app.post('/orders', async (req, res) => {
         const { restaurantId, itemIds, userAddress } = req.body;
         
-        const restaurantRes = await axios.post(`${services['restaurant']}/restaurants/${restaurantId}/orders`, { itemIds });
-        const { estimatedTime: prepTime } = restaurantRes.data;
-
-        const deliveryRes = await axios.post(`${services['delivery']}/restaurants/${restaurantId}/orders`, { address: userAddress });
-        const { estimatedTime: deliveryTime } = deliveryRes.data;
+        const { estimatedTime: prepTime } = await request(services, 'restaurant', 'POST', `/restaurants/${restaurantId}/orders`, { itemIds });
+        const { estimatedTime: deliveryTime } = await request(services, 'delivery', 'POST', `/restaurants/${restaurantId}/orders`, { address: userAddress });
 
         res.json(`Thank you for your order! It will be delivered in ${prepTime + deliveryTime} minutes`);
     });
