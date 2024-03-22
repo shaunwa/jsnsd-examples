@@ -3,15 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const createApiKeyMiddleware = require('./api-key-middleware');
+const interServiceRequest = require('./inter-service-request');
 
-const {
-    DELIVERY_SERVICE,
-    DELIVERY_SERVICE_API_KEY,
-    RESTAURANT_SERVICE,
-    RESTAURANT_SERVICE_API_KEY,
-    MAPS_SERVICE,
-    MAPS_SERVICE_API_KEY,
-} = process.env;
+const { DELIVERY_SERVICE, DELIVERY_SERVICE_API_KEY } = process.env;
 const serviceUrl = new URL(DELIVERY_SERVICE);
 
 const app = express();
@@ -23,20 +17,12 @@ app.post('/restaurants/:restaurantId/orders', async (req, res) => {
     const { restaurantId } = req.params;
     const { address: userAddress } = req.body;
 
-    const restaurantRes = await axios.get(RESTAURANT_SERVICE + `/restaurants/${restaurantId}/address`, {
-        headers: {
-            Authorization: RESTAURANT_SERVICE_API_KEY,
-        }
-    });
+    const restaurantRes = await interServiceRequest('restaurant', 'get', `/restaurants/${restaurantId}/address`);
     const { address: restaurantAddress } = restaurantRes.data;
 
     console.log(`A delivery driver will be sent to pick up an order from ${restaurantAddress}`);
 
-    const mapsRes = await axios.get(MAPS_SERVICE + `/estimated-time?start=${restaurantAddress}&end=${userAddress}`, {
-        headers: {
-            Authorization: MAPS_SERVICE_API_KEY,
-        }
-    });
+    const mapsRes = await interServiceRequest('maps', 'get', `/estimated-time?start=${restaurantAddress}&end=${userAddress}`);
     const { estimatedTime } = mapsRes.data;
 
     res.json({ estimatedTime });
