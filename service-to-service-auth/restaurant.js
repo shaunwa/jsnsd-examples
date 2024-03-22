@@ -1,21 +1,34 @@
 const { URL } = require('url');
 require('dotenv').config();
 const express = require('express');
-const createApiKeyMiddleware = require('./api-key-middleware');
+const createPermissionsMiddleware = require('./create-permissions-middleware');
 
-const { RESTAURANT_SERVICE, RESTAURANT_SERVICE_API_KEY } = process.env;
+const { RESTAURANT_SERVICE, ORDERS_TO_RESTAURANT_KEY, DELIVERY_TO_RESTAURANT_KEY } = process.env;
 const serviceUrl = new URL(RESTAURANT_SERVICE);
 
 const app = express();
 
-app.use(createApiKeyMiddleware(RESTAURANT_SERVICE_API_KEY));
+const permissions = {
+    [ORDERS_TO_RESTAURANT_KEY]: ['place orders'],
+    [DELIVERY_TO_RESTAURANT_KEY]: ['get address'],
+};
+
+app.use(createPermissionsMiddleware(permissions));
 
 app.post('/restaurants/:restaurantId/orders', async (req, res) => {
-    res.json({ estimatedTime: 30 });
+    if (req.permissions.includes('place orders')) {
+        return res.json({ estimatedTime: 30 });
+    }
+
+    return res.sendStatus(401);
 });
 
 app.get('/restaurants/:restaurantId/address', (req, res) => {
-    res.json({ address: '123 Main Street' });
+    if (req.permissions.includes('get address')) {
+        return res.json({ address: '123 Main Street' });
+    }
+
+    return res.sendStatus(401);
 });
 
 app.listen(serviceUrl.port, () => console.log(`Server is running on ${serviceUrl.href}`));

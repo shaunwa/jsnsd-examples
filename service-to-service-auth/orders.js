@@ -1,7 +1,7 @@
 const { URL } = require('url');
 require('dotenv').config();
 const express = require('express');
-const interServiceRequest = require('./inter-service-request');
+const interServiceRequest = require('./inter-service-request')('orders');
 
 const { ORDERS_SERVICE } = process.env;
 const serviceUrl = new URL(ORDERS_SERVICE);
